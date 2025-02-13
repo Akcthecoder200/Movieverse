@@ -7,12 +7,20 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const generateAccessAndRefereshTokens = async(userId) =>{
     try {
         const user = await User.findById(userId)
+
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+        // console.log(user);
+        
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
 
+        // console.log(accessToken,refreshToken);
+        
+
         user.refreshToken = refreshToken
         await user.save({ validateBeforeSave: false })
-
         return {accessToken, refreshToken}
 
 
@@ -122,12 +130,14 @@ const loginUser = asyncHandler(async (req, res) =>{
     //password check
     //access and referesh token
     //send cookie
-
-    const {email, name, password} = req.body
+   
+    const {email, password} = req.body
     console.log(email);
+    // console.log(`${process.env.TMDB_API_KEY}`);
+    
 
-    if (!name && !email) {
-        throw new ApiError(400, "username or email is required")
+    if (!password && !email) {
+        throw new ApiError(400, "password or email is required")
     }
     
     // Here is an alternative of above code based on logic discussed in video:
@@ -135,9 +145,9 @@ const loginUser = asyncHandler(async (req, res) =>{
     //     throw new ApiError(400, "username or email is required")
         
     // }
-
+   
     const user = await User.findOne({
-        $or: [{name}, {email}]
+        $or: [{email}]
     })
 
     if (!user) {
@@ -158,7 +168,8 @@ const loginUser = asyncHandler(async (req, res) =>{
         httpOnly: true,
         secure: true
     }
-
+//    console.log(loggedInUser);
+   
     return res
     .status(200)
     .cookie("accessToken", accessToken, options)

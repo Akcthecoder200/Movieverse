@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useContext } from "react";
-import {AuthContext} from '../context/AuthContext.jsx';
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
  // Make sure the path is correct
 
@@ -8,11 +10,11 @@ const Login = ({ toggle }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const { login } = useContext(AuthContext); // Using context to manage login
-
+    const navigate = useNavigate();
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission behavior
         try {
-            const res = await fetch("http://localhost:8000/api/v1/user/login", {
+            const res = await fetch("http://localhost:8000/api/v1/users/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include", // Important for cookies
@@ -24,8 +26,9 @@ const Login = ({ toggle }) => {
             if (!res.ok) throw new Error(data.message);
 
             // Use the login function from AuthContext
-            login(data.data.user, data.data.accessToken);
-
+            login(data.data.user);
+            console.log("login successsful",data.data.user);
+            navigate("/home");
             return data;
         } catch (error) {
             console.error("Login failed:", error);

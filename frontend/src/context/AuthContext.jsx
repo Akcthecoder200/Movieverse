@@ -45,7 +45,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("accessToken", accessToken); // Store token in localStorage
         localStorage.setItem("user", JSON.stringify(userData)); // Store user data
         setUser(userData); // Update the user state
-        navigate("/"); // Redirect to home page or desired route
+        navigate("/home"); // Redirect to home page or desired route
+        console.log("navigated to home");
+        
     };
 
     // Logout function
